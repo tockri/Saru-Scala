@@ -34,7 +34,19 @@ class TestProp extends Prop {
 case class Gen[A](sample:State[RNG, A])
 
 object Gen {
-  def choose(start:Int, stopExclusive:Int):Gen[Int] = ???
+
+  def unit[A](a: => A):Gen[A] = Gen(State(RNG.unit(a)))
+
+  def boolean: Gen[Boolean] = Gen(State(RNG.boolean))
+
+  def listOfN[A](n: Int, g: Gen[A]):Gen[List[A]] =
+    Gen(State.sequence(List.fill(n)(g.sample)))
+
+
+  def choose(start:Int, stopExclusive:Int):Gen[Int] = {
+    val state:State[RNG,Int] = State(RNG.nonNegativeInt)
+    Gen(state.map(n => start + n % (stopExclusive-start)))
+  }
 }
 
 
