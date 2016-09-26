@@ -31,7 +31,22 @@ class TestProp extends Prop {
   * @param sample
   * @tparam A
   */
-case class Gen[A](sample:State[RNG, A])
+case class Gen[A](sample:State[RNG, A]) {
+
+  def map[B](f: A => B): Gen[B] =
+    Gen(sample.map(f))
+
+  def map2[B,C](g: Gen[B])(f: (A,B) => C): Gen[C] =
+    Gen(sample.map2(g.sample)(f))
+
+  def flatMap[B](f: A => Gen[B]): Gen[B] =
+    Gen(sample.flatMap(a => f(a).sample))
+
+  def listOfN(size: Gen[Int]): Gen[List[A]] = {
+    Gen.listOfN(size, this)
+  }
+
+}
 
 object Gen {
   def choose(start:Int, stopExclusive:Int):Gen[Int] = {
@@ -55,6 +70,7 @@ object Gen {
   def listOfN[A](n: Int, g: Gen[A]): Gen[List[A]] = {
     Gen(State.sequence(List.fill(n)(g.sample)))
   }
+
 }
 
 

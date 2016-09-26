@@ -136,7 +136,6 @@ object RNG {
         unit(mod)
       else
         nonNegativeLessThan(n)
-
     }
   }
 }
