@@ -8,15 +8,18 @@ import fpinscala.state.{State, RNG}
   */
 object Study {
 
-  def main(args:Array[String]):Unit = {
-    //val c = (new TestProp && new TestProp).check
-    //println(c)
+  def main(args:Array[String]) = {
+    val c = (new TestProp && new TestProp).check
+    println(c)
+    println("-----------")
     val intGen:Gen[Int] = Gen(State {rng =>rng.nextInt})
     val gen:Gen[List[Int]] = Gen.listOfN(10, intGen)
     println("ランダムな配列")
     println(gen.sample.run(RNG.Simple(10000L))._1)
-
-    println()
+    // val gen:Gen[List[Int]] = Gen.listOfN(10, Gen.choose(1,100))
+    // println("ランダムな配列")
+    // println(gen.sample.run(RNG.Simple(10000L))._1)
+    println("-----------")
   }
 
   def sum(ints:List[Int]):Int = {
@@ -37,11 +40,7 @@ class TestProp extends Prop {
   * @param sample
   * @tparam A
   */
-case class Gen[A](sample:State[RNG, A]) {
-  def flatMap[B](f: A => Gen[B]): Gen[B] =
-    Gen(sample.flatMap(a => f(a).sample))
-
-}
+case class Gen[A](sample:State[RNG, A])
 
 object Gen {
 
@@ -58,8 +57,6 @@ object Gen {
     Gen(state.map(n => start + n % (stopExclusive-start)))
   }
 }
-
-
 
 trait Prop {
   def check:Boolean
