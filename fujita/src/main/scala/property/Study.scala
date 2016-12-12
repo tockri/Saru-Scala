@@ -57,6 +57,8 @@ object Gen {
     val state:State[RNG,Int] = State(RNG.nonNegativeInt)
     Gen(state.map(n => start + n % (stopExclusive-start)))
   }
+
+  def union[A](g1:Gen[A], g2:Gen[A]):Gen[A] = boolean.flatMap(b => if (b) g1 else g2)
 }
 
 
