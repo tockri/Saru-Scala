@@ -8,7 +8,16 @@ import fpinscala.errorhandling._
 
 object Study {
   def main(args: Array[String]): Unit = {
-    println("Saru")
+    val l = Monad.listMonad
+    // println(l.replicateM2(4, List(1, 2, 3)))
+
+    // println(l.filterM(List(1, 2, 3, 4, 5))(a => List(a % 2 == 0)))
+
+    val f:Int => List[Int] = a => List(a + 1)
+    val g:Int => List[Int] = a => List(a * 2)
+    val h:Int => List[Int] = a => List(a / 3)
+    println(l.compose(l.compose(f, g), h)(5))
+    println(l.compose(f, l.compose(g, h))(5))
   }
 }
 
@@ -32,6 +41,29 @@ trait Monad[F[_]] extends Functor[F] {
 
   def traverse[A, B](la: List[A])(f: A => F[B]): F[List[B]] =
     la.foldRight(unit(List[B]()))((a, mlb) => map2(f(a), mlb)(_ :: _))
+
+  def replicateM[A](n: Int, ma: F[A]): F[List[A]] =
+    if (n <= 0) unit(List())
+    else map2(ma, replicateM(n - 1, ma))(_ :: _)
+
+  def replicateM2[A](n: Int, ma: F[A]): F[List[A]] =
+    if (n <= 0) unit(List())
+    else {
+      flatMap(ma)(a => flatMap(replicateM2(n - 1, ma))(b => unit(a :: b)))
+    }
+
+  def filterM[A](ms: List[A])(f: A => F[Boolean]): F[List[A]] =
+    ms match {
+      case Nil => unit(Nil)
+      case h :: t => flatMap(f(h))(b =>
+        if (!b) filterM(t)(f)
+        else map(filterM(t)(f))(h :: _))
+    }
+
+  def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] = {a =>
+    flatMap(f(a))(g)
+  }
+
 }
 
 object Monad {
