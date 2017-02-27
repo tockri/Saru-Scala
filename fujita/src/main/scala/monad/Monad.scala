@@ -16,8 +16,15 @@ object Study {
     val f:Int => List[Int] = a => List(a + 1)
     val g:Int => List[Int] = a => List(a * 2)
     val h:Int => List[Int] = a => List(a / 3)
-    println(l.compose(l.compose(f, g), h)(5))
-    println(l.compose(f, l.compose(g, h))(5))
+    //println(l.compose(l.compose(f, g), h)(5))
+    //println(l.compose(f, l.compose(g, h))(5))
+
+    val unit:Int => List[Int] = a => l.unit(a)
+    println(l.compose(g, unit)(99))
+    println(l.compose(unit, g)(99))
+    // println(l.compose(l.unit[List[Int]], f)(99))
+
+    println(l.join(List(List(1, 2, 3), List(4, 5, 6))))
   }
 }
 
@@ -52,6 +59,9 @@ trait Monad[F[_]] extends Functor[F] {
       flatMap(ma)(a => flatMap(replicateM2(n - 1, ma))(b => unit(a :: b)))
     }
 
+  /**
+    * p240 EXERCISE 11.6
+    */
   def filterM[A](ms: List[A])(f: A => F[Boolean]): F[List[A]] =
     ms match {
       case Nil => unit(Nil)
@@ -60,9 +70,18 @@ trait Monad[F[_]] extends Functor[F] {
         else map(filterM(t)(f))(h :: _))
     }
 
+  /**
+    * p244 EXERCISE 11.7
+    */
   def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] = {a =>
     flatMap(f(a))(g)
   }
+
+  /**
+    * p245 EXERCISE 11.12
+    */
+  def join[A](mma: F[F[A]]): F[A] = flatMap(mma)(a => a)
+
 
 }
 
