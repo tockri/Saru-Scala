@@ -80,7 +80,7 @@ trait Monad[F[_]] extends Functor[F] {
   /**
     * p245 EXERCISE 11.12
     */
-  def join[A](mma: F[F[A]]): F[A] = flatMap(mma)(a => a)
+  def join[A](mma: F[F[A]]): F[A] = flatMap(mma)(ma => ma)
 
 
 }
