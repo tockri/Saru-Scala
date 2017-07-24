@@ -1,14 +1,23 @@
 package hello
 
 object HelloWorld {
+
   def main(args:Array[String]) {
-    val pair: Pair[AnyRef, AnyRef] = new Pair[String, String]("foo!", "bar1")
-    println(pair)
+    val year = 2017
+    val month = 1
+    val curDate = date(year)(month) _ // カリー化された関数の部分適用
+    (1 to 31).foreach(curDate)
+
   }
+
+  def date(year: Int)(month: Int)(day: Int) =
+    println(s"$year/$month/$day")
 
   def divide(m:Int, n:Int): (Int, Int) = {
     (m / n, m % n)
   }
+
+  def printVector(x:Int, y:Int) = println(s"x = $x, y = $y")
 }
 
 class Pair[+T1, +T2](val t1: T1, val t2: T2) {
