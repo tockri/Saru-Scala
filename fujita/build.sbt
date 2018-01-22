@@ -2,9 +2,9 @@ name := """Saru Scala"""
 
 version := "1.0"
 
-scalaVersion := "2.12.1"
+scalaVersion := "2.12.3"
 
-mainClass in Compile := Some("ppap.Study")
+mainClass in Compile := Some("fpinscala.exercise.Section3")
 
 libraryDependencies ++= Seq(
   "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
